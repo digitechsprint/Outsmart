@@ -7,9 +7,9 @@ import {
   MessageSquare, 
   Briefcase, 
   FileText,
-  Settings,
   LogOut,
-  Users
+  Users,
+  Mail
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -18,6 +18,7 @@ export default function Sidebar() {
   const menuItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+    { name: "Newsletter", href: "/admin/newsletter", icon: Mail },
     { name: "Projects", href: "/admin/projects", icon: Briefcase },
     { name: "Services", href: "/admin/services", icon: Users },
     { name: "Blog", href: "/admin/blog", icon: FileText },
@@ -65,10 +66,6 @@ export default function Sidebar() {
 
       {/* Bottom Actions */}
       <div className="p-4 border-t border-gray-100 flex flex-col gap-2">
-        <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-300 text-left font-bold">
-          <Settings size={20} />
-          <span className="text-[15px]">Settings</span>
-        </button>
         <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-50 transition-all duration-300 text-left font-bold">
           <LogOut size={20} />
           <span className="text-[15px]">Logout</span>

@@ -6,15 +6,36 @@ import { MapPin, Phone, Mail } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "error" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
+  const [errorMessage, setErrorMessage] = useState("Please enter a valid email address.");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorMessage("Please enter a valid email address.");
       setStatus("error");
       return;
     }
-    // Simulate API call
+
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        setErrorMessage(result.message || "Failed to subscribe. Please try again.");
+        setStatus("error");
+        return;
+      }
+    } catch {
+      setErrorMessage("Failed to subscribe. Please try again.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("success");
     setEmail("");
     setTimeout(() => {
@@ -106,14 +127,15 @@ export default function Footer() {
               </div>
               <button
                 type="submit"
+                disabled={status === "loading"}
                 suppressHydrationWarning
-                className="text-white text-sm font-bold px-5 py-2.5 rounded-lg whitespace-nowrap transition-opacity hover:opacity-90 shadow-lg shrink-0"
+                className="text-white text-sm font-bold px-5 py-2.5 rounded-lg whitespace-nowrap transition-opacity hover:opacity-90 shadow-lg shrink-0 disabled:opacity-60"
                 style={{ backgroundColor: "var(--primary)" }}
               >
-                Subscribe
+                {status === "loading" ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
-            {status === "error" && <p className="text-red-500 text-xs font-medium mb-2">Please enter a valid email address.</p>}
+            {status === "error" && <p className="text-red-500 text-xs font-medium mb-2">{errorMessage}</p>}
             {status === "success" && <p className="text-green-500 text-xs font-medium mb-2">Successfully subscribed to our newsletter!</p>}
             <p className="text-xs text-gray-500 leading-relaxed font-medium mt-2">
               *Stay updated with the latest tech trends & insights.
